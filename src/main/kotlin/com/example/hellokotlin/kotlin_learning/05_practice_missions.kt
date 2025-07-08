@@ -3,7 +3,22 @@ package com.example.hellokotlin.kotlin_learning
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun main() {
+// Calculator operation types
+sealed class Operation {
+    data class Add(val a: Double, val b: Double) : Operation()
+    data class Subtract(val a: Double, val b: Double) : Operation()
+    data class Multiply(val a: Double, val b: Double) : Operation()
+    data class Divide(val a: Double, val b: Double) : Operation()
+    data class Power(val base: Double, val exponent: Double) : Operation()
+    data class Sqrt(val number: Double) : Operation()
+}
+
+// Expense category types
+enum class Category {
+    FOOD, TRANSPORT, SHOPPING, ENTERTAINMENT, BILLS, OTHER
+}
+
+fun mainPractice() {
     println("=== Kotlin 실습 미션 ===\n")
     
     println("1. 콘솔 Todo 앱")
@@ -30,7 +45,7 @@ fun todoAppMission() {
         override fun toString(): String {
             val status = if (completed) "✓" else "○"
             val time = createdAt.format(DateTimeFormatter.ofPattern("MM-dd HH:mm"))
-            return "[$status] #$id $title ($time)"
+            return "[${status}] #${id} ${title} (${time})"
         }
     }
     
@@ -64,7 +79,7 @@ fun todoAppMission() {
             val total = todos.size
             val completed = todos.count { it.completed }
             val pending = total - completed
-            return "전체: $total | 완료: $completed | 대기: $pending"
+            return "전체: ${total} | 완료: ${completed} | 대기: ${pending}"
         }
     }
     
@@ -91,14 +106,6 @@ fun todoAppMission() {
 }
 
 fun calculatorMission() {
-    sealed class Operation {
-        data class Add(val a: Double, val b: Double) : Operation()
-        data class Subtract(val a: Double, val b: Double) : Operation()
-        data class Multiply(val a: Double, val b: Double) : Operation()
-        data class Divide(val a: Double, val b: Double) : Operation()
-        data class Power(val base: Double, val exponent: Double) : Operation()
-        data class Sqrt(val number: Double) : Operation()
-    }
     
     class Calculator {
         private val history = mutableListOf<Pair<String, Double>>()
@@ -112,7 +119,7 @@ fun calculatorMission() {
                     require(operation.b != 0.0) { "0으로 나눌 수 없습니다" }
                     operation.a / operation.b
                 }
-                is Operation.Power -> Math.pow(operation.a, operation.b)
+                is Operation.Power -> Math.pow(operation.base, operation.exponent)
                 is Operation.Sqrt -> {
                     require(operation.number >= 0) { "음수의 제곱근은 계산할 수 없습니다" }
                     Math.sqrt(operation.number)
@@ -124,7 +131,7 @@ fun calculatorMission() {
                 is Operation.Subtract -> "${operation.a} - ${operation.b}"
                 is Operation.Multiply -> "${operation.a} × ${operation.b}"
                 is Operation.Divide -> "${operation.a} ÷ ${operation.b}"
-                is Operation.Power -> "${operation.a}^${operation.b}"
+                is Operation.Power -> "${operation.base}^${operation.exponent}"
                 is Operation.Sqrt -> "√${operation.number}"
             }
             
@@ -151,7 +158,7 @@ fun calculatorMission() {
     operations.forEach { op ->
         try {
             val result = calc.calculate(op)
-            println("계산 완료: ${calc.getHistory().last().first} = $result")
+            println("계산 완료: ${calc.getHistory().last().first} = ${result}")
         } catch (e: Exception) {
             println("오류: ${e.message}")
         }
@@ -159,14 +166,11 @@ fun calculatorMission() {
     
     println("\n계산 기록:")
     calc.getHistory().forEach { (expr, result) ->
-        println("$expr = $result")
+        println("${expr} = ${result}")
     }
 }
 
 fun expenseTrackerMission() {
-    enum class Category {
-        FOOD, TRANSPORT, SHOPPING, ENTERTAINMENT, BILLS, OTHER
-    }
     
     data class Expense(
         val id: Int,
@@ -242,7 +246,7 @@ fun expenseTrackerMission() {
     println("전체 지출 내역:")
     tracker.getExpenses().forEach { expense ->
         val date = expense.date.format(DateTimeFormatter.ofPattern("MM-dd"))
-        println("$date | ${expense.description} | ${expense.amount}원 | ${expense.category}")
+        println("${date} | ${expense.description} | ${expense.amount}원 | ${expense.category}")
     }
     
     println("\n카테고리별 총액:")

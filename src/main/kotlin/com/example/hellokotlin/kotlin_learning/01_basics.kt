@@ -1,6 +1,6 @@
 package com.example.hellokotlin.kotlin_learning
 
-fun main() {
+fun mainBasics() {
     println("=== Kotlin 기본 문법 학습 ===\n")
     
     variablesExample()
@@ -16,16 +16,16 @@ fun variablesExample() {
     val immutableName = "GD"
     var mutableAge = 25
     
-    println("val (불변): $immutableName")
-    println("var (가변): $mutableAge")
+    println("val (불변): ${immutableName}")
+    println("var (가변): ${mutableAge}")
     
     mutableAge = 26
-    println("나이 변경 후: $mutableAge")
+    println("나이 변경 후: ${mutableAge}")
     
     val inferredType = "타입 추론"
     val explicitType: String = "명시적 타입"
-    println("타입 추론: $inferredType")
-    println("명시적 타입: $explicitType")
+    println("타입 추론: ${inferredType}")
+    println("명시적 타입: ${explicitType}")
     
     println()
 }
@@ -34,13 +34,13 @@ fun functionsExample() {
     println("2. 함수 선언")
     
     fun greet(name: String): String {
-        return "안녕하세요, $name님!"
+        return "안녕하세요, ${name}님!"
     }
     
-    fun greetShort(name: String) = "반갑습니다, $name님!"
-    
+    fun greetShort(name: String) = "반갑습니다, ${name}님!"
+
     fun printSum(a: Int, b: Int) {
-        println("$a + $b = ${a + b}")
+        println("${a} + ${b} = ${a + b}")
     }
     
     fun multiply(a: Int, b: Int = 2) = a * b
@@ -68,7 +68,7 @@ fun conditionalExample() {
     }
     
     val grade = if (score >= 90) "A" else if (score >= 80) "B" else "C"
-    println("표현식으로 사용: 등급 = $grade")
+    println("표현식으로 사용: 등급 = ${grade}")
     
     val day = 3
     val dayName = when (day) {
@@ -80,13 +80,13 @@ fun conditionalExample() {
         6, 7 -> "주말"
         else -> "잘못된 입력"
     }
-    println("when 표현식: $day일은 $dayName")
-    
+    println("when 표현식: ${day}일은 ${dayName}")
+
     val number = 15
     when {
-        number % 2 == 0 -> println("$number는 짝수")
-        number % 3 == 0 -> println("$number는 3의 배수")
-        else -> println("$number는 홀수")
+        number % 2 == 0 -> println("${number}는 짝수")
+        number % 3 == 0 -> println("${number}는 3의 배수")
+        else -> println("${number}는 홀수")
     }
     
     println()
@@ -97,37 +97,37 @@ fun loopsExample() {
     
     println("for 루프:")
     for (i in 1..5) {
-        print("$i ")
+        print("${i} ")
     }
     println()
     
     println("역순:")
     for (i in 5 downTo 1) {
-        print("$i ")
+        print("${i} ")
     }
     println()
     
     println("step 사용:")
     for (i in 1..10 step 2) {
-        print("$i ")
+        print("${i} ")
     }
     println()
     
     val fruits = listOf("사과", "바나나", "오렌지")
     println("리스트 순회:")
     for (fruit in fruits) {
-        println("- $fruit")
+        println("- ${fruit}")
     }
     
     println("인덱스와 함께:")
     for ((index, fruit) in fruits.withIndex()) {
-        println("$index: $fruit")
+        println("${index}: ${fruit}")
     }
     
     println("\nwhile 루프:")
     var count = 0
     while (count < 3) {
-        println("카운트: $count")
+        println("카운트: ${count}")
         count++
     }
     
@@ -140,11 +140,11 @@ fun nullSafetyExample() {
     var nullableName: String? = "Kotlin"
     var nonNullName: String = "Java"
     
-    println("nullable 변수: $nullableName")
-    println("non-null 변수: $nonNullName")
+    println("nullable 변수: ${nullableName}")
+    println("non-null 변수: ${nonNullName}")
     
     nullableName = null
-    println("null 할당 후: $nullableName")
+    println("null 할당 후: ${nullableName}")
     
     var testName: String? = "테스트"
     println("안전한 호출: ${testName?.length}")
@@ -153,7 +153,7 @@ fun nullSafetyExample() {
     println("null일 때 안전한 호출: ${testName?.length}")
     
     val length = testName?.length ?: 0
-    println("Elvis 연산자 사용: 길이 = $length")
+    println("Elvis 연산자 사용: 길이 = ${length}")
     
     fun printLength(text: String?) {
         text?.let {

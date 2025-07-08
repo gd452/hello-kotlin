@@ -1,6 +1,6 @@
 package com.example.hellokotlin.kotlin_learning
 
-fun main() {
+fun mainFunctional() {
     println("=== Kotlin 함수형 프로그래밍 ===\n")
     
     lambdaExample()
@@ -16,7 +16,7 @@ fun lambdaExample() {
     val sum = { a: Int, b: Int -> a + b }
     println("람다로 더하기: 5 + 3 = ${sum(5, 3)}")
     
-    val greet: (String) -> String = { name -> "안녕하세요, $name님!" }
+    val greet: (String) -> String = { name -> "안녕하세요, ${name}님!" }
     println(greet("Kotlin"))
     
     val isEven = { n: Int -> n % 2 == 0 }
@@ -25,14 +25,14 @@ fun lambdaExample() {
     
     val numbers = listOf(1, 2, 3, 4, 5)
     val doubled = numbers.map { it * 2 }
-    println("원본: $numbers")
-    println("2배: $doubled")
+    println("원본: ${numbers}")
+    println("2배: ${doubled}")
     
     val longGreeting = { name: String, time: String ->
         when (time) {
-            "morning" -> "좋은 아침입니다, $name님!"
-            "evening" -> "좋은 저녁입니다, $name님!"
-            else -> "안녕하세요, $name님!"
+            "morning" -> "좋은 아침입니다, ${name}님!"
+            "evening" -> "좋은 저녁입니다, ${name}님!"
+            else -> "안녕하세요, ${name}님!"
         }
     }
     println(longGreeting("개발자", "morning"))
@@ -69,10 +69,10 @@ fun higherOrderFunctionExample() {
     }
     
     val result = "hello kotlin".processText { it.uppercase() }
-    println("대문자 변환: $result")
+    println("대문자 변환: ${result}")
     
     val reversed = "hello kotlin".processText { it.reversed() }
-    println("역순 변환: $reversed")
+    println("역순 변환: ${reversed}")
     
     println()
 }
@@ -81,19 +81,19 @@ fun collectionOperationsExample() {
     println("3. 컬렉션 함수형 연산")
     
     val numbers = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-    println("원본 리스트: $numbers")
+    println("원본 리스트: ${numbers}")
     
     val evenNumbers = numbers.filter { it % 2 == 0 }
-    println("짝수만: $evenNumbers")
+    println("짝수만: ${evenNumbers}")
     
     val squared = numbers.map { it * it }
-    println("제곱: $squared")
+    println("제곱: ${squared}")
     
     val sum = numbers.reduce { acc, n -> acc + n }
-    println("합계 (reduce): $sum")
+    println("합계 (reduce): ${sum}")
     
     val sumWithInitial = numbers.fold(100) { acc, n -> acc + n }
-    println("초기값 100에서 시작한 합계 (fold): $sumWithInitial")
+    println("초기값 100에서 시작한 합계 (fold): ${sumWithInitial}")
     
     data class Person(val name: String, val age: Int, val city: String)
     
@@ -106,18 +106,18 @@ fun collectionOperationsExample() {
     )
     
     val seoulPeople = people.filter { it.city == "서울" }
-    println("\n서울 거주자: $seoulPeople")
+    println("\n서울 거주자: ${seoulPeople}")
     
     val names = people.map { it.name }
-    println("이름 목록: $names")
+    println("이름 목록: ${names}")
     
     val averageAge = people.map { it.age }.average()
-    println("평균 나이: $averageAge")
+    println("평균 나이: ${averageAge}")
     
     val grouped = people.groupBy { it.city }
     println("\n도시별 그룹:")
     grouped.forEach { (city, residents) ->
-        println("$city: ${residents.map { it.name }}")
+        println("${city}: ${residents.map { it.name }}")
     }
     
     val sorted = people.sortedBy { it.age }
@@ -136,21 +136,21 @@ fun sequenceExample() {
         .filter { it % 2 == 0 }
         .map { it * it }
         .take(5)
-    println("즉시 평가 결과: $eagerResult")
+    println("즉시 평가 결과: ${eagerResult}")
     
     val lazyResult = numbers.asSequence()
         .filter { it % 2 == 0 }
         .map { it * it }
         .take(5)
         .toList()
-    println("지연 평가 결과: $lazyResult")
+    println("지연 평가 결과: ${lazyResult}")
     
     val sequence = generateSequence(1) { it + 1 }
         .filter { it % 3 == 0 }
         .map { it * 2 }
         .take(10)
         .toList()
-    println("무한 시퀀스에서 3의 배수를 2배로: $sequence")
+    println("무한 시퀀스에서 3의 배수를 2배로: ${sequence}")
     
     fun fibonacci(): Sequence<Int> = sequence {
         var a = 0
@@ -166,7 +166,7 @@ fun sequenceExample() {
     }
     
     val fib = fibonacci().take(10).toList()
-    println("피보나치 수열 (처음 10개): $fib")
+    println("피보나치 수열 (처음 10개): ${fib}")
     
     println()
 }
@@ -176,7 +176,7 @@ fun functionalCompositionExample() {
     
     val trim = { s: String -> s.trim() }
     val uppercase = { s: String -> s.uppercase() }
-    val addPrefix = { s: String -> "PREFIX: $s" }
+    val addPrefix = { s: String -> "PREFIX: ${s}" }
     
     fun <A, B, C> compose(f: (B) -> C, g: (A) -> B): (A) -> C = { x -> f(g(x)) }
     
@@ -203,7 +203,7 @@ fun functionalCompositionExample() {
         .map { it.amount }
         .reduce { acc, amount -> acc + amount }
     
-    println("\n완료된 주문 총액: $totalCompleted")
+    println("\n완료된 주문 총액: ${totalCompleted}")
     
     val result = orders
         .asSequence()
@@ -212,7 +212,7 @@ fun functionalCompositionExample() {
         .filter { it > 150 }
         .toList()
     
-    println("10% 할증 후 150 초과 주문: $result")
+    println("10% 할증 후 150 초과 주문: ${result}")
     
     val (completed, notCompleted) = orders.partition { it.status == "completed" }
     println("\n완료된 주문: ${completed.size}개")

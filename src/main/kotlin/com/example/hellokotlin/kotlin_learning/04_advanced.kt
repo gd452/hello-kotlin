@@ -1,9 +1,152 @@
 package com.example.hellokotlin.kotlin_learning
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlin.system.measureTimeMillis
 
-fun main() {
+// Value classes 정의 (함수 밖에서 선언)
+@JvmInline
+value class Password(val value: String) {
+    init {
+        require(value.length >= 8) { "비밀번호는 8자 이상이어야 합니다" }
+    }
+
+    fun isStrong(): Boolean {
+        return value.any { it.isDigit() } &&
+               value.any { it.isUpperCase() } &&
+               value.any { it.isLowerCase() }
+    }
+}
+
+@JvmInline
+value class Email(val value: String) {
+    init {
+        require("@" in value) { "올바른 이메일 형식이 아닙니다" }
+    }
+}
+
+@JvmInline
+value class Celsius(val value: Double) {
+    fun toFahrenheit() = value * 9/5 + 32
+    fun toKelvin() = value + 273.15
+}
+
+// 인터페이스 정의 (함수 밖에서 선언)
+interface Printer {
+    fun print(message: String)
+}
+
+class ConsolePrinter : Printer {
+    override fun print(message: String) {
+        println("콘솔: ${message}")
+    }
+}
+
+class PrefixPrinter(
+    private val prefix: String,
+    private val printer: Printer
+) : Printer by printer {
+    override fun print(message: String) {
+        printer.print("${prefix} ${message}")
+    }
+}
+
+// 위임 속성 클래스들
+class LoggingProperty(private var value: String) {
+    operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): String {
+        println("${property.name} 읽기: '${value}'")
+        return value
+    }
+
+    operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, newValue: String) {
+        println("${property.name} 변경: '${value}' -> '${newValue}'")
+        value = newValue
+    }
+}
+
+class RangeProperty(private var value: Int, private val range: IntRange) {
+    operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): Int = value
+
+    operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, newValue: Int) {
+        require(newValue in range) { "${property.name}은(는) ${range} 범위 내여야 합니다" }
+        value = newValue
+    }
+}
+
+class DelegationUser {
+    var name: String by LoggingProperty("")
+    var age: Int by RangeProperty(0, 0..150)
+}
+
+// DSL 클래스들
+class HTML {
+    private val elements = mutableListOf<String>()
+
+    fun head(block: Head.() -> Unit) {
+        val head = Head()
+        head.block()
+        elements.add(head.toString())
+    }
+
+    fun body(block: Body.() -> Unit) {
+        val body = Body()
+        body.block()
+        elements.add(body.toString())
+    }
+
+    override fun toString() = "<html>\n${elements.joinToString("\n")}\n</html>"
+}
+
+class Head {
+    private var title = ""
+
+    fun title(text: String) {
+        title = text
+    }
+
+    override fun toString() = "  <head>\n    <title>${title}</title>\n  </head>"
+}
+
+class Body {
+    private val content = mutableListOf<String>()
+
+    fun h1(text: String) {
+        content.add("    <h1>${text}</h1>")
+    }
+
+    fun p(text: String) {
+        content.add("    <p>${text}</p>")
+    }
+
+    fun ul(block: UL.() -> Unit) {
+        val ul = UL()
+        ul.block()
+        content.add(ul.toString())
+    }
+
+    override fun toString() = "  <body>\n${content.joinToString("\n")}\n  </body>"
+}
+
+class UL {
+    private val items = mutableListOf<String>()
+
+    fun li(text: String) {
+        items.add("      <li>${text}</li>")
+    }
+
+    override fun toString() = "    <ul>\n${items.joinToString("\n")}\n    </ul>"
+}
+
+fun html(block: HTML.() -> Unit): HTML {
+    val html = HTML()
+    html.block()
+    return html
+}
+
+fun mainAdvanced() {
     println("=== Kotlin 고급 기능 ===\n")
     
     extensionFunctionExample()
@@ -19,7 +162,7 @@ fun extensionFunctionExample() {
     fun String.removeSpaces(): String = this.replace(" ", "")
     
     val text = "Hello Kotlin World"
-    println("원본: '$text'")
+    println("원본: '${text}'")
     println("공백 제거: '${text.removeSpaces()}'")
     
     fun String.isPalindrome(): Boolean {
@@ -38,8 +181,8 @@ fun extensionFunctionExample() {
     val numbers = listOf(10, 20, 30)
     val shortList = listOf(5)
     println("\n두 번째 요소:")
-    println("$numbers -> ${numbers.secondOrNull()}")
-    println("$shortList -> ${shortList.secondOrNull()}")
+    println("${numbers} -> ${numbers.secondOrNull()}")
+    println("${shortList} -> ${shortList.secondOrNull()}")
     
     fun Int.isEven() = this % 2 == 0
     fun Int.isOdd() = !isEven()
@@ -55,7 +198,7 @@ fun extensionFunctionExample() {
     val result = "hello"
         .applyIf(true) { uppercase() }
         .applyIf(false) { reversed() }
-    println("\n조건부 적용: $result")
+    println("\n조건부 적용: ${result}")
     
     println()
 }
@@ -63,37 +206,11 @@ fun extensionFunctionExample() {
 fun inlineClassExample() {
     println("2. 값 클래스 (Inline Classes)")
     
-    @JvmInline
-    value class Password(val value: String) {
-        init {
-            require(value.length >= 8) { "비밀번호는 8자 이상이어야 합니다" }
-        }
-        
-        fun isStrong(): Boolean {
-            return value.any { it.isDigit() } && 
-                   value.any { it.isUpperCase() } && 
-                   value.any { it.isLowerCase() }
-        }
-    }
-    
-    @JvmInline
-    value class Email(val value: String) {
-        init {
-            require("@" in value) { "올바른 이메일 형식이 아닙니다" }
-        }
-    }
-    
     val password = Password("MyPass123")
     println("비밀번호 강도: ${if (password.isStrong()) "강함" else "약함"}")
     
     val email = Email("user@example.com")
     println("이메일: ${email.value}")
-    
-    @JvmInline
-    value class Celsius(val value: Double) {
-        fun toFahrenheit() = value * 9/5 + 32
-        fun toKelvin() = value + 273.15
-    }
     
     val temp = Celsius(25.0)
     println("\n온도 변환:")
@@ -107,56 +224,11 @@ fun inlineClassExample() {
 fun delegationExample() {
     println("3. 위임 (Delegation)")
     
-    interface Printer {
-        fun print(message: String)
-    }
-    
-    class ConsolePrinter : Printer {
-        override fun print(message: String) {
-            println("콘솔: $message")
-        }
-    }
-    
-    class PrefixPrinter(
-        private val prefix: String,
-        private val printer: Printer
-    ) : Printer by printer {
-        override fun print(message: String) {
-            printer.print("$prefix $message")
-        }
-    }
-    
     val printer = PrefixPrinter("[INFO]", ConsolePrinter())
     printer.print("애플리케이션 시작")
     
-    class User {
-        var name: String by LoggingProperty("")
-        var age: Int by RangeProperty(0, 0..150)
-    }
-    
-    class LoggingProperty(private var value: String) {
-        operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): String {
-            println("${property.name} 읽기: '$value'")
-            return value
-        }
-        
-        operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, newValue: String) {
-            println("${property.name} 변경: '$value' -> '$newValue'")
-            value = newValue
-        }
-    }
-    
-    class RangeProperty(private var value: Int, private val range: IntRange) {
-        operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): Int = value
-        
-        operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, newValue: Int) {
-            require(newValue in range) { "${property.name}은(는) $range 범위 내여야 합니다" }
-            value = newValue
-        }
-    }
-    
     println("\n속성 위임:")
-    val user = User()
+    val user = DelegationUser()
     user.name = "김코틀린"
     println("이름: ${user.name}")
     user.age = 25
@@ -167,8 +239,8 @@ fun delegationExample() {
     }
     
     println("\n지연 초기화:")
-    println("첫 번째 접근: $lazyValue")
-    println("두 번째 접근: $lazyValue")
+    println("첫 번째 접근: ${lazyValue}")
+    println("두 번째 접근: ${lazyValue}")
     
     println()
 }
@@ -178,7 +250,7 @@ fun coroutineExample() = runBlocking {
     
     suspend fun fetchUser(id: Int): String {
         delay(1000)
-        return "User$id"
+        return "User${id}"
     }
     
     suspend fun fetchOrders(userId: String): List<String> {
@@ -190,7 +262,7 @@ fun coroutineExample() = runBlocking {
     val time1 = measureTimeMillis {
         val user = fetchUser(1)
         val orders = fetchOrders(user)
-        println("사용자: $user, 주문: $orders")
+        println("사용자: ${user}, 주문: ${orders}")
     }
     println("소요 시간: ${time1}ms")
     
@@ -202,7 +274,7 @@ fun coroutineExample() = runBlocking {
             
             val user = userDeferred.await()
             val orders = ordersDeferred.await()
-            println("사용자: $user, 주문: $orders")
+            println("사용자: ${user}, 주문: ${orders}")
         }
     }
     println("소요 시간: ${time2}ms")
@@ -211,7 +283,7 @@ fun coroutineExample() = runBlocking {
     val jobs = List(3) { index ->
         launch {
             delay((index + 1) * 200L)
-            println("작업 $index 완료")
+            println("작업 ${index} 완료")
         }
     }
     jobs.forEach { it.join() }
@@ -225,7 +297,7 @@ fun coroutineExample() = runBlocking {
     
     println("\nFlow 예제:")
     simpleFlow().collect { value ->
-        println("수신: $value")
+        println("수신: ${value}")
     }
     
     val channel = Channel<Int>()
@@ -240,7 +312,7 @@ fun coroutineExample() = runBlocking {
     
     println("\n채널 예제:")
     for (y in channel) {
-        println("채널에서 수신: $y")
+        println("채널에서 수신: ${y}")
     }
     
     println()
@@ -248,70 +320,6 @@ fun coroutineExample() = runBlocking {
 
 fun dslExample() {
     println("5. DSL (Domain Specific Language)")
-    
-    class HTML {
-        private val elements = mutableListOf<String>()
-        
-        fun head(block: Head.() -> Unit) {
-            val head = Head()
-            head.block()
-            elements.add(head.toString())
-        }
-        
-        fun body(block: Body.() -> Unit) {
-            val body = Body()
-            body.block()
-            elements.add(body.toString())
-        }
-        
-        override fun toString() = "<html>\n${elements.joinToString("\n")}\n</html>"
-    }
-    
-    class Head {
-        private var title = ""
-        
-        fun title(text: String) {
-            title = text
-        }
-        
-        override fun toString() = "  <head>\n    <title>$title</title>\n  </head>"
-    }
-    
-    class Body {
-        private val content = mutableListOf<String>()
-        
-        fun h1(text: String) {
-            content.add("    <h1>$text</h1>")
-        }
-        
-        fun p(text: String) {
-            content.add("    <p>$text</p>")
-        }
-        
-        fun ul(block: UL.() -> Unit) {
-            val ul = UL()
-            ul.block()
-            content.add(ul.toString())
-        }
-        
-        override fun toString() = "  <body>\n${content.joinToString("\n")}\n  </body>"
-    }
-    
-    class UL {
-        private val items = mutableListOf<String>()
-        
-        fun li(text: String) {
-            items.add("      <li>$text</li>")
-        }
-        
-        override fun toString() = "    <ul>\n${items.joinToString("\n")}\n    </ul>"
-    }
-    
-    fun html(block: HTML.() -> Unit): HTML {
-        val html = HTML()
-        html.block()
-        return html
-    }
     
     val document = html {
         head {
@@ -335,7 +343,7 @@ fun dslExample() {
         var age: Int = 0
         var email: String = ""
         
-        override fun toString() = "Person(name='$name', age=$age, email='$email')"
+        override fun toString() = "Person(name='${name}', age=${age}, email='${email}')"
     }
     
     fun person(block: Person.() -> Unit): Person {
@@ -350,7 +358,7 @@ fun dslExample() {
         email = "hong@example.com"
     }
     
-    println("\nPerson DSL: $user")
+    println("\nPerson DSL: ${user}")
     
     println()
 }
