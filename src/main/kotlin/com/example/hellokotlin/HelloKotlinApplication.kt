@@ -8,4 +8,7 @@ class HelloKotlinApplication
 
 fun main(args: Array<String>) {
 	runApplication<HelloKotlinApplication>(*args)
+
+	println("Hello World")
+
 }

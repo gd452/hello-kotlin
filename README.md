@@ -17,6 +17,7 @@ Kotlin과 Spring Boot를 활용한 실전 프로젝트 학습 Repository
   - Spring Web
   - Spring Data JPA
   - H2 Database
+  - Kotlin Coroutines
 
 ## 📁 프로젝트 구조
 
@@ -36,57 +37,84 @@ src/main/kotlin/com/example/hellokotlin/
     ├── 03_functional.kt         # 함수형 프로그래밍
     ├── 04_advanced.kt           # 고급 기능
     ├── 05_practice_missions.kt  # 실습 미션
-    └── KOTLIN_LEARNING_GUIDE.md # 학습 가이드
+    ├── KOTLIN_LEARNING_GUIDE.md # 학습 가이드
+    └── notebooks/               # 인터랙티브 학습용 노트북
+        ├── 01_basics_notebook.ipynb
+        ├── 02_oop_notebook.ipynb
+        ├── 03_functional_notebook.ipynb
+        ├── 04_advanced_notebook.ipynb
+        └── 05_practice_missions_notebook.ipynb
 ```
 
 ## 📚 Kotlin 학습 과정
 
-### 🎯 1단계: Kotlin 기초 학습
+### 🎯 학습 방법 선택
 
-프로젝트에 포함된 학습 예제를 통해 Kotlin의 핵심 개념을 익힐 수 있습니다:
+#### 1. **Kotlin 파일로 학습** (추천: 빠른 실행)
+- 각 `.kt` 파일에는 `main()` 함수가 있어 독립적으로 실행 가능
+- IntelliJ IDEA에서 파일 열고 main 함수 왼쪽의 ▶ 버튼 클릭
+- SpringBoot Runner로 실행:
+  ```bash
+  ./gradlew bootRun --args="basics"    # 기본 문법
+  ./gradlew bootRun --args="oop"       # 객체지향
+  ./gradlew bootRun --args="functional" # 함수형
+  ./gradlew bootRun --args="advanced"   # 고급 기능
+  ./gradlew bootRun --args="practice"   # 실습
+  ```
 
-1. **기본 문법** (`01_basics.kt`)
-   - 변수 선언 (val, var)
-   - 함수 정의와 호출
-   - 조건문 (if, when)
-   - 반복문 (for, while)
-   - Null Safety
+#### 2. **Jupyter Notebook으로 학습** (추천: 인터랙티브 학습)
+- 각 개념을 단계별로 실행하며 학습
+- 즉시 결과 확인 가능
+- 코드 수정 후 재실행 용이
 
-2. **객체지향 프로그래밍** (`02_oop.kt`)
-   - 클래스와 생성자
-   - 데이터 클래스
-   - 상속과 다형성
-   - 인터페이스
-   - Sealed 클래스
-   - 싱글톤 객체
+**Jupyter 설치 및 실행:**
+```bash
+# Kotlin Kernel 설치
+pip install jupyter
+conda install -c jetbrains kotlin-jupyter-kernel
 
-3. **함수형 프로그래밍** (`03_functional.kt`)
-   - 람다 표현식
-   - 고차 함수
-   - 컬렉션 연산 (filter, map, reduce)
-   - 시퀀스와 지연 평가
-   - 함수 합성
+# 노트북 실행
+jupyter notebook
+# 브라우저에서 .ipynb 파일 열기
+```
 
-4. **고급 기능** (`04_advanced.kt`)
-   - 확장 함수
-   - 값 클래스 (Inline Classes)
-   - 위임 (Delegation)
-   - 코루틴
-   - DSL 구축
+### 📋 학습 내용
 
-5. **실습 미션** (`05_practice_missions.kt`)
-   - Todo 앱 구현
-   - 계산기 구현
-   - 가계부 앱 구현
+1. **기본 문법** (`01_basics.kt` / `01_basics_notebook.ipynb`)
+   - 변수 선언 (val, var) - Java의 final과 비교
+   - 함수 정의와 호출 - Python의 기본값 매개변수 지원
+   - 조건문 (if, when) - Java의 switch보다 강력
+   - 반복문 (for, while) - Python의 range와 유사
+   - Null Safety - NullPointerException 방지
 
-### 📖 학습 방법
+2. **객체지향 프로그래밍** (`02_oop.kt` / `02_oop_notebook.ipynb`)
+   - 클래스와 생성자 - Java보다 간결한 문법
+   - 데이터 클래스 - Python의 @dataclass와 유사
+   - 상속과 다형성 - 기본적으로 final, open 키워드로 상속 허용
+   - 인터페이스 - Java 8+처럼 기본 구현 가능
+   - Sealed 클래스 - 타입 안전한 상태 표현
+   - 싱글톤 객체 - 언어 레벨 싱글톤 지원
 
-1. 각 파일의 `main()` 함수를 실행하여 예제 확인
-2. IntelliJ IDEA에서 파일 열고 main 함수 왼쪽의 ▶ 버튼 클릭
-3. 또는 터미널에서 실행:
-   ```bash
-   ./gradlew run -PmainClass=com.example.hellokotlin.kotlin_learning.01_basicsKt
-   ```
+3. **함수형 프로그래밍** (`03_functional.kt` / `03_functional_notebook.ipynb`)
+   - 람다 표현식 - Java 8 람다보다 간결
+   - 고차 함수 - 함수를 매개변수로, 반환값으로
+   - 컬렉션 연산 (filter, map, reduce) - Java Stream API와 유사
+   - 시퀀스와 지연 평가 - 대용량 데이터 효율적 처리
+   - 함수 합성 - 작은 함수들을 조합
+
+4. **고급 기능** (`04_advanced.kt` / `04_advanced_notebook.ipynb`)
+   - 확장 함수 - 기존 클래스에 메서드 추가
+   - 값 클래스 (Inline Classes) - 런타임 오버헤드 없는 래퍼
+   - 위임 (Delegation) - by 키워드로 위임 패턴 구현
+   - 코루틴 - 비동기 프로그래밍
+   - DSL 구축 - 도메인 특화 언어 만들기
+
+5. **실습 미션** (`05_practice_missions.kt` / `05_practice_missions_notebook.ipynb`)
+   - Todo 앱 구현 - 기본 CRUD와 상태 관리
+   - 계산기 구현 - Sealed 클래스로 타입 안전한 연산
+   - 가계부 앱 구현 - 데이터 분석과 리포트 생성
+
+### 📖 추가 학습 자료
 
 자세한 학습 가이드는 [KOTLIN_LEARNING_GUIDE.md](src/main/kotlin/com/example/hellokotlin/kotlin_learning/KOTLIN_LEARNING_GUIDE.md)를 참고하세요.
 
@@ -165,9 +193,10 @@ curl http://localhost:8080/todos
 ## 🚀 학습 로드맵
 
 ### 현재 단계: 1단계 - Kotlin & SpringBoot 실전 입문 ✅
-- Kotlin 기본 문법 학습
-- SpringBoot 기초 (Hello API, CRUD)
-- H2 인메모리 DB 연동
+- ✅ Kotlin 기본 문법 학습
+- ✅ SpringBoot 기초 (Hello API, CRUD)
+- ✅ H2 인메모리 DB 연동
+- ✅ 인터랙티브 학습 자료 제공 (Jupyter Notebook)
 
 ### 다음 단계
 
@@ -184,6 +213,12 @@ curl http://localhost:8080/todos
 - 확장 가능한 아키텍처 설계
 
 각 단계별로 점진적으로 복잡도가 증가하며, 실전에서 사용할 수 있는 기술들을 익힐 수 있습니다.
+
+## 💡 학습 팁
+
+1. **Java 개발자**: Kotlin의 null safety와 확장 함수에 주목하세요
+2. **Python 개발자**: 정적 타입의 장점을 활용하면서도 간결한 문법 즐기기
+3. **C/C++ 개발자**: 메모리 관리 없이 안전한 프로그래밍 경험하기
 
 ## 🤝 기여 방법
 

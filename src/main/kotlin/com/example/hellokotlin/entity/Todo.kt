@@ -3,6 +3,7 @@ package com.example.hellokotlin.entity
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
+
 @Entity
 @Table(name = "todos")
 data class Todo(
@@ -12,7 +13,7 @@ data class Todo(
     
     @Column(nullable = false)
     var title: String,
-    
+
     @Column(columnDefinition = "TEXT")
     var description: String? = null,
     
