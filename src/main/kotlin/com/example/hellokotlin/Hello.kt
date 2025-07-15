@@ -31,7 +31,19 @@ class Car {
 
 
 fun main() {
-    println("Hello Kotlin")
-    val car3 = Car()
-    car3.displayCar()
+//    println("Hello Kotlin")
+//    val car3 = Car()
+//    car3.displayCar()
+
+    // 변수에 익명 객체 저장
+    val adHocObject = object {
+        var x = 1
+        var y = 2
+        fun sum() = x + y
+    }
+
+    println("익명 객체의 합: ${adHocObject.sum()}")
+    adHocObject.x = 10
+    println("x 변경 후 합: ${adHocObject.sum()}")
+
 }
